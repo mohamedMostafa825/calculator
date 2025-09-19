@@ -1,3 +1,4 @@
+const buttons = document.querySelector("btns");
 let operand1, operator, operand2;
 
 function operate(num1, operator, num2) {
@@ -32,3 +33,21 @@ function multiply(a, b) {
 function divide(a, b) {
   return a / b;
 }
+
+buttons.addEventListener("click", (event) => {
+  let btn = event.target;
+  switch (btn) {
+    case "=":
+      showResult();
+      break;
+    case "clear":
+      initialize();
+      break;
+    case "operator":
+      updateOperator(btn.textContent);
+      break;
+    default:
+      updateOperands(btn.textContent);
+      break;
+  }
+});
