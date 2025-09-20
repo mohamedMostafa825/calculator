@@ -1,4 +1,5 @@
 const buttons = document.querySelector("btns");
+const displayScreen = document.querySelector(".display");
 let operand1, operator, operand2;
 
 function operate(num1, operator, num2) {
@@ -15,7 +16,6 @@ function operate(num1, operator, num2) {
     case "/":
       return divide(num1, num2);
       break;
-
     default:
       break;
   }
@@ -32,6 +32,10 @@ function multiply(a, b) {
 }
 function divide(a, b) {
   return a / b;
+}
+
+function display(num) {
+  displayScreen.textContent = num;
 }
 
 buttons.addEventListener("click", (event) => {
