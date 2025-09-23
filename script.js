@@ -1,8 +1,6 @@
 const buttons = document.querySelector(".btns");
 const displayScreen = document.querySelector(".display");
-let operand1, operator, operand2;
-
-let currentOperand = 1; // 1 for operand1, 2 for operand2
+let operand1, operator, operand2, state;
 
 initialize();
 
@@ -10,7 +8,7 @@ function initialize() {
   operand1 = 0;
   operator = "";
   operand2 = 0;
-  currentOperand = 1; // Reset to first operand
+  state = 0; // initial(0), op1(1), op2(2), result(3)
   display(0);
 }
 
@@ -43,37 +41,65 @@ function multiply(a, b) {
   return a * b;
 }
 function divide(a, b) {
+  if (b == 0) return NaN;
   return a / b;
 }
 
 function display(num) {
-  displayScreen.textContent = num;
+  if (Number.isInteger(num)) {
+    displayScreen.textContent = num.toString();
+  } else {
+    displayScreen.textContent = Number(num.toFixed(9));
+  }
 }
 
-function updateOperands(digit) {
-  if (currentOperand == 1) {
-    operand1 = operand1 * 10 + digit;
-  } else if (currentOperand == 2) {
-    operand2 = operand2 * 10 + digit;
-  }
+function appendDigit(num, digit) {
+  return num * 10 + digit;
 }
 
 buttons.addEventListener("click", (event) => {
   let btn = event.target;
-  switch (btn) {
-    case "=":
-      display(operate(operand1, operator, operand2)); // new
-      break;
-    case "clear":
-      initialize();
-      break;
-    case "operator":
-      operator = btn.textContent;
-      operand1 = displayScreen.textContent;
-      currentOperand = 2;
-      break;
-    default:
-      updateOperands(btn.textContent);
-      break;
+  let btnClassList = btn.classList;
+
+  if (btnClassList.contains("digit")) {
+    if (state == 0) {
+      state = 1;
+      operand1 = appendDigit(operand1, Number(btn.textContent));
+      display(operand1);
+    } else if (state == 1) {
+      operand1 = appendDigit(operand1, Number(btn.textContent));
+      display(operand1);
+    } else if (state == 2) {
+      operand2 = appendDigit(operand2, Number(btn.textContent));
+      display(operand2);
+    } else if (state == 3) {
+      state = 1;
+      operand1 = appendDigit(0, Number(btn.textContent));
+      display(operand1);
+    }
+  } else if (btnClassList.contains("operator")) {
+    if (state == 2) {
+      operand1 = operate(operand1, operator, operand2);
+      display(operand1);
+    } else if (state == 3) {
+    }
+    state = 2;
+    operator = btn.textContent;
+    operand2 = 0;
+  } else if (btnClassList.contains("=")) {
+    if (state == 0) {
+      // do nothing
+    } else if (state == 1) {
+      // do nothing
+    } else if (state == 2) {
+      operand1 = operate(operand1, operator, operand2);
+      display(operand1);
+      state = 3;
+    } else if (state == 3) {
+      operand1 = operate(operand1, operator, operand2);
+      display(operand1);
+    }
+  } else if (btnClassList.contains("clear")) {
+    initialize();
   }
 });
